@@ -1,0 +1,41 @@
+[project]
+name = "pulse"
+version = "0.1.0"
+description = "A sentiment analyzer for stock picks"
+readme = { content-type = "text/markdown", file = "README.md" }
+requires-python = ">=3.12"
+authors = [{ name = "The Pulse Project", email = "johntaeunchung@gmail.com" }]
+dependencies = []
+
+[project.urls]
+"Homepage" = "https://github.com/Trade-Sense/pulse"
+"Documentation" = "https://github.com/Trade-Sense/pulse"
+"Source" = "https://github.com/Trade-Sense/pulse"
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.15.0",
+    "ruff>=0.9.10",
+]
+
+[tool.ruff]
+line-length = 88
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv*",
+    "*.ipynb",
+]
+
+[tool.ruff.lint]
+select = ["B", "C", "E", "F", "W", "I", "TID"]
+
+[toolmypy]
+strict = true
+plugins = "pydantic.mypy"
+exclude = ["tests/*"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
