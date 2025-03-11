@@ -5,7 +5,10 @@ description = "A sentiment analyzer for stock picks"
 readme = { content-type = "text/markdown", file = "README.md" }
 requires-python = ">=3.12"
 authors = [{ name = "The Pulse Project", email = "johntaeunchung@gmail.com" }]
-dependencies = []
+dependencies = [
+    "fastapi>=0.115.11",
+    "pydantic-settings>=2.8.1",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/Trade-Sense/pulse"
@@ -19,7 +22,7 @@ dev = [
 ]
 
 [tool.ruff]
-line-length = 88
+line-length = 100
 exclude = [
     ".git",
     "__pycache__",
