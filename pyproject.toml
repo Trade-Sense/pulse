@@ -17,11 +17,23 @@ dependencies = [
 "Documentation" = "https://github.com/Trade-Sense/pulse"
 "Source" = "https://github.com/Trade-Sense/pulse"
 
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
+
+
 [project.optional-dependencies]
 dev = [
     "mypy>=1.15.0",
     "ruff>=0.9.10",
 ]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+
 
 [tool.ruff]
 line-length = 100
@@ -44,3 +56,4 @@ exclude = ["tests/*"]
 
 [tool.pyright]
 typeCheckingMode = "strict"
+

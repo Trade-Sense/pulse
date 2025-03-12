@@ -28,7 +28,7 @@ class SkillMap:
                 skill.get_function_callable(),
             )
 
-    def get_function_callable_by_name(self, skill_name) -> Callable:
+    def get_function_callable_by_name(self, skill_name: str) -> Callable:
         return self.skill_map[skill_name][1]
 
     def get_combined_function_description_for_openai(self):

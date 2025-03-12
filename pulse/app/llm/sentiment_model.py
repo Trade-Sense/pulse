@@ -7,6 +7,8 @@ from llama_index.core.workflow import Event, Workflow, step
 from llama_index.llms.ollama import Ollama
 from pydantic import BaseModel
 
+from .skill_map import SkillMap
+
 
 class TextExtraction(BaseModel):
     """Extract basic information"""
@@ -20,6 +22,7 @@ class SentimentDetails(BaseModel):
     sentiment_score: float
     sentiment_label: str
 
+skill_map = SkillMap()
 
 class ToolCallEvent(Event):
     tool_calls: list[ToolSelection]
