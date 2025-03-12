@@ -6,6 +6,7 @@ readme = { content-type = "text/markdown", file = "README.md" }
 requires-python = ">=3.12"
 authors = [{ name = "The Pulse Project", email = "johntaeunchung@gmail.com" }]
 dependencies = [
+    "asyncio>=3.4.3",
     "fastapi[standard]>=0.115.11",
     "llama-index>=0.12.23",
     "llama-index-llms-ollama>=0.5.3",
@@ -16,6 +17,9 @@ dependencies = [
 "Homepage" = "https://github.com/Trade-Sense/pulse"
 "Documentation" = "https://github.com/Trade-Sense/pulse"
 "Source" = "https://github.com/Trade-Sense/pulse"
+
+[project.scripts]
+"pulse-web" = "pulse.app.run_app:run_app"
 
 [dependency-groups]
 dev = [

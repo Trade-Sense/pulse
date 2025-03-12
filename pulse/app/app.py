@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -8,6 +9,7 @@ from pulse.app.api.routes import api_router
 from pulse.app.config import get_config
 
 app_config = get_config()
+loop = asyncio.new_event_loop()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
