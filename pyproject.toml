@@ -6,7 +6,7 @@ readme = { content-type = "text/markdown", file = "README.md" }
 requires-python = ">=3.12"
 authors = [{ name = "The Pulse Project", email = "johntaeunchung@gmail.com" }]
 dependencies = [
-    "fastapi>=0.115.11",
+    "fastapi[standard]>=0.115.11",
     "llama-index>=0.12.23",
     "llama-index-llms-ollama>=0.5.3",
     "pydantic-settings>=2.8.1",

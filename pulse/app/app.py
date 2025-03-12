@@ -1,11 +1,23 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from pulse.app.api.dependencies import ApiDependencies
+from pulse.app.api.routes import api_router
 from pulse.app.config import get_config
 
 app_config = get_config()
 
-app = FastAPI(title="Pulse AI - Sentiment Analyzer")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    ApiDependencies.initialize(config=app_config)
+
+    yield
+    ApiDependencies.shutdown()
+
+
+app = FastAPI(title="Pulse AI - Sentiment Analyzer", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,3 +26,4 @@ app.add_middleware(
     allow_methods=app_config.allow_methods,
     allow_headers=app_config.allow_headers,
 )
+app.include_router(api_router)
