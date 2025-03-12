@@ -18,10 +18,10 @@ class PulseConfig(BaseSettings):
 
     # WEB
     host: str = Field(
-        default="127.0.0.1",
+        default="0.0.0.0",
         description="IP address to bind to. Use `0.0.0.0` to serve to your local network.",
     )
-    port: int = Field(default=9090, description="Port to bind to.")
+    port: int = Field(default=8080, description="Port to bind to.")
     allow_origins: list[str] = Field(default=[], description="Allowed CORS origins.")
     allow_credentials: bool = Field(default=True, description="Allow CORS credentials.")
     allow_methods: list[str] = Field(default=["*"], description="Methods allowed for CORS.")
