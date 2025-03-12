@@ -27,6 +27,12 @@ class PulseConfig(BaseSettings):
     allow_methods: list[str] = Field(default=["*"], description="Methods allowed for CORS.")
     allow_headers: list[str] = Field(default=["*"], description="Headers allowed for CORS.")
 
+    # MODEL
+    model_base_url: str = Field(
+        default="http://localhost:11434/v1/",
+        description="IP address where the language model is serving",
+    )
+
 
 @lru_cache(maxsize=1)
 def get_config() -> PulseConfig:
