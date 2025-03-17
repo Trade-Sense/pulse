@@ -20,6 +20,7 @@ def run_app() -> None:
     """Main entrypoint for the app"""
 
     app_config = get_config()
+    print(app_config)
     app, loop = get_app()
 
     config = uvicorn.Config(app=app, host=app_config.host, port=app_config.port, loop="asyncio")

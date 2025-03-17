@@ -1,7 +1,7 @@
 from functools import lru_cache
 
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class PulseConfig(BaseSettings):
@@ -32,6 +32,18 @@ class PulseConfig(BaseSettings):
         default="http://localhost:11434/v1/",
         description="IP address where the language model is serving",
     )
+
+    # REDDIT
+    client_id: str = Field(
+        default="",
+        description="Client ID for reddit",
+    )
+    client_secret: str = Field(default="", description="Client Secret for reddit,")
+    password: str = Field(default="", description="Reddit password")
+    user_agent: str = Field(default="", description="Reddit user agent")
+    username: str = Field(default="", description="Reddit username")
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 @lru_cache(maxsize=1)

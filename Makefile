@@ -27,7 +27,7 @@ ruff:
 
 # Run the unit tests
 test:
-	pytest ./tests
+	pytest -s ./tests
 
 ## -------------- DOCKER COMPOSE ---------
 

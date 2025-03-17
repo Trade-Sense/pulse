@@ -16,5 +16,3 @@ RUN uv sync --frozen
 EXPOSE 8080
 
 CMD [".venv/bin/python", "-m", "pulse.app.main", "serve"]
-
-

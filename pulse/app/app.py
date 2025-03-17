@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pulse.app.api.dependencies import ApiDependencies
 from pulse.app.api.routes import api_router
 from pulse.app.config import get_config
+from pulse.app.services.web_scraper.reddit_scraper import RedditCrawler
+from pulse.app.utils.repeat_tasks import repeat_every
 
 app_config = get_config()
 loop = asyncio.new_event_loop()
@@ -14,7 +16,8 @@ loop = asyncio.new_event_loop()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     ApiDependencies.initialize(config=app_config)
-
+    reddit_crawler = RedditCrawler(app_config)
+    await reddit_crawler.scrape_subreddit()
     yield
     ApiDependencies.shutdown()
 
@@ -29,3 +32,7 @@ app.add_middleware(
     allow_headers=app_config.allow_headers,
 )
 app.include_router(api_router)
+
+@repeat_every(seconds=5)
+def print_hello() -> None:
+    print("test")

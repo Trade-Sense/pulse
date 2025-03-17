@@ -3,7 +3,7 @@ from unittest.mock import mock_open, patch
 
 import pytest
 
-from pulse.app.services.symbol_cache import SymbolCache, TickerInfo
+from pulse.app.services.symbol_cache.symbol_cache import SymbolCache, TickerInfo
 
 # Mock JSON data for tests
 MOCK_JSON_DATA = """
