@@ -29,6 +29,10 @@ ruff:
 test:
 	pytest -s ./tests
 
+# Autogenerate migration files from models
+generate-migrations:
+	alembic revision --autogenerate -m "$(COMMIT)"
+
 ## -------------- DOCKER COMPOSE ---------
 
 .PHONY: build serve stop clean

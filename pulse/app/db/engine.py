@@ -42,12 +42,7 @@ def get_session() -> Generator[Session, None, None]:
 
 
 def run_migrations() -> None:
-    engine = get_session()
     alembic_config = Config("alembic.ini")
     alembic_config.set_main_option("sqlalchemy.url", app_config.database_url)
-    alembic_config.attributes["connection"] = engine
     alembic_config.attributes["configure_logger"] = False
     command.upgrade(alembic_config, "head")
-
-    # alembic_cfg.attributes['connection'] = connection
-    # command.upgrade(alembic_cfg, "head")
