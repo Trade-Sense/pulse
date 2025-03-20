@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pulse.app.api.dependencies import ApiDependencies
 from pulse.app.api.routes import api_router
 from pulse.app.config import get_config
+from pulse.app.db.engine import run_migrations
 from pulse.app.services.web_scraper.reddit_scraper import RedditCrawler
 from pulse.app.utils.repeat_tasks import repeat_every
 
@@ -18,6 +19,7 @@ async def lifespan(app: FastAPI):
     ApiDependencies.initialize(config=app_config)
     reddit_crawler = RedditCrawler(app_config)
     await reddit_crawler.scrape_subreddit()
+    run_migrations()
     yield
     ApiDependencies.shutdown()
 

@@ -43,6 +43,8 @@ class PulseConfig(BaseSettings):
     user_agent: str = Field(default="", description="Reddit user agent")
     username: str = Field(default="", description="Reddit username")
 
+    database_url: str = Field(default="", description="Postgres Database URL")
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
