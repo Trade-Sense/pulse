@@ -22,10 +22,11 @@ def upgrade() -> None:
     """Upgrade schema."""
     op.create_table(
         "sentiment_score",
+        sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("time", sa.TIMESTAMP(timezone=True), nullable=False),
         sa.Column("symbol", sa.String(length=20), nullable=False),
-        sa.Column("sentiment_score", sa.Float(), nullable=False),
-        sa.Column("sentiment_label", sa.String(), nullable=False),
+        sa.Column("score", sa.Float(), nullable=False),
+        sa.Column("label", sa.String(), nullable=False),
         sa.Column("source", sa.String(length=20), nullable=False),
         sa.Column("headline", sa.Text(), nullable=True),
         sa.Column("created_at", sa.TIMESTAMP(timezone=True), nullable=False, server_default=sa.func.now()),

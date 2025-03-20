@@ -6,20 +6,21 @@ from pulse.app.db.enums import SentimentSource
 from pulse.app.db.models import SentimentScore
 
 
-async def insert_sentiment_score(
+def insert_sentiment_score(
     session: Session,
     time: datetime,
     symbol: str,
     score: float,
     label: str,
     source: SentimentSource,
-    headline: str | None,
+    headline: str | None = None,
 ) -> None:
+    # TODO: Add additional checks. Score should be between -1 and 1
     sentiment_score = SentimentScore(
         time=time,
         symbol=symbol,
-        sentiment_score=score,
-        sentiment_label=label,
+        score=score,
+        label=label,
         source=source,
         headline=headline,
     )

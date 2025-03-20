@@ -1,7 +1,7 @@
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import Connection, Engine, engine_from_config, pool
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -51,18 +51,40 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
 
-    with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+    connectable = context.config.attributes.get("connection", None)
+    if connectable is None:
+        config = context.config.get_section(context.config.config_ini_section) or {}
+        connectable = engine_from_config(
+            config,
+            prefix="sqlalchemy.",
+            poolclass=pool.NullPool,
+        )
 
-        with context.begin_transaction():
-            context.run_migrations()
+    if isinstance(connectable, Engine):
+        with connectable.connect() as connect:
+            run_migrations(connect)
+    else:
+        run_migrations(connectable)
 
+
+def run_migrations(connection: Connection) -> None:
+    transaction = connection.begin()
+    try:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
+            transactional_ddl=True,
+            transaction_per_migration=True,
+        )
+        context.run_migrations()
+        transaction.commit()
+    except Exception:
+        transaction.rollback()
+        raise
+    finally:
+        connection.close()
 
 if context.is_offline_mode():
     run_migrations_offline()
