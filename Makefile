@@ -9,6 +9,7 @@ help:
 	@echo "  run				Run pulse app"
 	@echo "  ruff               Run ruff, fixing any safely-fixable errors and formatting"
 	@echo "  test               Run the unit tests."
+	@echo "  generate 		    Generate migration files from models in pulse/app/db/models.py"
 	@echo "  build              Build the project"
 	@echo "  run                Run the application"
 	@echo "  clean              Remove generated files"
@@ -28,10 +29,6 @@ ruff:
 # Run the unit tests
 test:
 	pytest -s ./tests
-
-# Autogenerate migration files from models
-generate-migrations:
-	alembic revision --autogenerate -m "$(COMMIT)"
 
 ## -------------- DOCKER COMPOSE ---------
 
