@@ -2,7 +2,7 @@ from typing import Dict
 
 from fastapi import APIRouter, HTTPException
 
-from pulse.app.api.dependencies import ApiDependencies
+from .dependencies import ApiDependencies
 
 router = APIRouter(prefix="/stocks", tags=["stocks"])
 
@@ -27,7 +27,6 @@ async def get_stock_news(symbol: str) -> None:
     if not symbol_info:
         raise HTTPException(status_code=400, detail="Symbol does not exist")
 
-    print("Hello world")
 
 
 @router.post("/sentiment/analyze")
@@ -35,4 +34,3 @@ async def analyze_article() -> None:
     """
     Accepts text input (e.g., news articles) and returns the sentiment score.
     """
-    print("Hello world")

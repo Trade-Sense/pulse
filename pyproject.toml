@@ -6,10 +6,13 @@ readme = { content-type = "text/markdown", file = "README.md" }
 requires-python = ">=3.12"
 authors = [{ name = "The Pulse Project", email = "johntaeunchung@gmail.com" }]
 dependencies = [
+    "alembic>=1.15.1",
     "asyncio>=3.4.3",
+    "asyncpraw>=7.8.1",
     "fastapi[standard]>=0.115.11",
     "llama-index>=0.12.23",
     "llama-index-llms-ollama>=0.5.3",
+    "psycopg2-binary>=2.9.10",
     "pydantic-settings>=2.8.1",
 ]
 
@@ -23,13 +26,13 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "mypy>=1.15.0",
     "pytest>=8.3.5",
 ]
 
 
 [project.optional-dependencies]
 dev = [
-    "mypy>=1.15.0",
     "ruff>=0.9.10",
 ]
 
@@ -37,10 +40,11 @@ dev = [
 testpaths = [
     "tests",
 ]
+asyncio_default_fixture_loop_scope = "function"
 
 
 [tool.ruff]
-line-length = 100
+line-length = 108
 exclude = [
     ".git",
     "__pycache__",
