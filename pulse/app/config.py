@@ -27,15 +27,40 @@ class PulseConfig(BaseSettings):
     allow_methods: list[str] = Field(default=["*"], description="Methods allowed for CORS.")
     allow_headers: list[str] = Field(default=["*"], description="Headers allowed for CORS.")
 
-    # MODEL
-    model_base_url: str = Field(
-        default="http://localhost:11434/v1/",
-        description="IP address where the language model is serving",
+    # DB — shares forge's TimescaleDB instance by default
+    db_url: str = Field(
+        default="postgresql://postgres:admin@localhost:5436/forge_dev",
+        description="PostgreSQL connection URL",
     )
+
+    # Alpaca (for news ingestion)
+    alpaca_api_key: str = Field(default="", description="Alpaca API key")
+    alpaca_api_secret: str = Field(default="", description="Alpaca API secret")
+
+    # Reddit OAuth
+    reddit_client_id: str = Field(default="", description="Reddit OAuth client ID")
+    reddit_client_secret: str = Field(default="", description="Reddit OAuth client secret")
+    reddit_user_agent: str = Field(default="trade-sense-pulse/1.0", description="Reddit user agent")
+
+    # Ingestion
+    target_symbols: list[str] = Field(
+        default=["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA"],
+        description="Symbols to ingest sentiment for",
+    )
+    target_subreddits: list[str] = Field(
+        default=["wallstreetbets", "stocks", "investing", "options", "StockMarket"],
+        description="Subreddits to scrape",
+    )
+    ingest_lookback_hours: int = Field(default=24, description="Lookback window per ingest run")
+    news_ingest_interval_hours: int = Field(default=1, description="How often to auto-ingest Alpaca news")
+    reddit_ingest_interval_hours: int = Field(default=4, description="How often to auto-ingest Reddit")
+    min_confidence: float = Field(default=0.3, description="Discard FinBERT events below this confidence")
+
+    # FinBERT
+    finbert_model: str = Field(default="ProsusAI/finbert", description="HuggingFace model ID")
+    finbert_max_tokens: int = Field(default=512, description="Max token length per input text")
 
 
 @lru_cache(maxsize=1)
 def get_config() -> PulseConfig:
-    config = PulseConfig()
-
-    return config
+    return PulseConfig()

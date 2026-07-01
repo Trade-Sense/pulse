@@ -18,7 +18,7 @@ help:
 
 # Runs pulse
 run:
-	python -m pulse.app.main
+	uv run python -m pulse.app.main
 
 # Runs ruff, fixing any safely-fixable errors and formatting
 ruff:

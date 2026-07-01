@@ -1,32 +1,25 @@
 services:
-  timescaledb:
-    image: timescale/timescaledb:2.18.1-pg17
-    container_name: timescaledb
-    restart: always
-    ports:
-      - "5435:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: pulse_dev
-    volumes:
-      - timescale_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d pulse_dev" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-
-  server:
+  pulse_service:
     build: .
-    container_name: pulse-server
+    container_name: pulse_service
     restart: on-failure
-    depends_on:
-      timescaledb:
-        condition: service_healthy
     ports:
       - "8083:8080"
+    # For Reddit, you need to create an app at reddit.com/prefs/apps (type: script, redirect URI: http://localhost). Then fill in REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET in docker-compose and restart. That's separate from Alpaca — it's a free Reddit developer account.
+    environment:
+      - DB_URL=postgresql://postgres:admin@forge_timescaledb:5432/forge_dev
+      - HF_HUB_DISABLE_XET=1
+      - ALPACA_API_KEY=AKA5EYKBQQRN8BASRSS5
+      - ALPACA_API_SECRET=WQUCOecUGmv7ESsWwnuDcBJQXMtq2HgzU6ZMQgnN
+      - REDDIT_CLIENT_ID=
+      - REDDIT_CLIENT_SECRET=
+      - REDDIT_USER_AGENT=trade-sense-pulse/1.0
+    volumes:
+      - ${HOME}/.cache/huggingface:/root/.cache/huggingface
+    networks:
+      - forge_network
 
-volumes:
-  timescale_data:
-    driver: local
+networks:
+  forge_network:
+    external: true
+    name: forge_network
