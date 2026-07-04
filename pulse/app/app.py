@@ -48,6 +48,20 @@ async def _reddit_ingest_job() -> None:
         logger.exception("Scheduled reddit ingest failed")
 
 
+async def _sec_ingest_job() -> None:
+    try:
+        result = await run_ingest(
+            app_config.target_symbols,
+            app_config,
+            SentimentRepository(get_pool()),
+            sources=["sec"],
+            lookback_hours=app_config.sec_ingest_interval_hours + 1,
+        )
+        logger.info("Scheduled SEC ingest: %d events ingested", result.ingested)
+    except Exception:
+        logger.exception("Scheduled SEC ingest failed")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_pool(app_config.db_url)
@@ -74,11 +88,20 @@ async def lifespan(app: FastAPI):
         replace_existing=True,
         next_run_time=now,
     )
+    scheduler.add_job(
+        _sec_ingest_job,
+        trigger="interval",
+        hours=app_config.sec_ingest_interval_hours,
+        id="sec_ingest",
+        replace_existing=True,
+        next_run_time=now,
+    )
     scheduler.start()
     logger.info(
-        "News ingest scheduled every %dh, Reddit every %dh — %d symbols (both fire immediately)",
+        "Ingest scheduled — news %dh, reddit %dh, SEC %dh — %d symbols (all fire immediately)",
         app_config.news_ingest_interval_hours,
         app_config.reddit_ingest_interval_hours,
+        app_config.sec_ingest_interval_hours,
         len(app_config.target_symbols),
     )
 

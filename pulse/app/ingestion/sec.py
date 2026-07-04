@@ -15,8 +15,21 @@ _EDGAR_URL = "https://efts.sec.gov/LATEST/search-index"
 
 
 class SECIngester(BaseIngester):
-    def __init__(self, min_confidence: float = 0.3) -> None:
+    def __init__(
+        self,
+        min_confidence: float = 0.3,
+        user_agent: str = "TradeSense research admin@tradesense.local",
+        max_concurrency: int = 3,
+        request_delay: float = 0.3,
+    ) -> None:
         self._min_confidence = min_confidence
+        # SEC EDGAR rejects requests without a User-Agent (403) and rate-limits to
+        # ~10 req/s, blocking the IP on sustained bursts. A semaphore caps parallelism
+        # but not *rate*, so also pace each request — together they keep throughput
+        # (concurrency / request_delay) safely under SEC's ceiling.
+        self._user_agent = user_agent
+        self._sem = asyncio.Semaphore(max_concurrency)
+        self._delay = request_delay
 
     async def ingest(
         self,
@@ -76,10 +89,12 @@ class SECIngester(BaseIngester):
             "enddt": end.strftime("%Y-%m-%d"),
             "forms": "8-K",
         }
-        async with httpx.AsyncClient(timeout=10) as client:
+        headers = {"User-Agent": self._user_agent}
+        async with self._sem, httpx.AsyncClient(timeout=10, headers=headers) as client:
             resp = await client.get(_EDGAR_URL, params=params)
             resp.raise_for_status()
             data = resp.json()
+            await asyncio.sleep(self._delay)  # hold the slot to pace under SEC's limit
             return data.get("hits", {}).get("hits", [])
 
     @staticmethod

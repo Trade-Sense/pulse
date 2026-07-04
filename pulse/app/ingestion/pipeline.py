@@ -9,7 +9,6 @@ from pulse.app.ingestion.sec import SECIngester
 from pulse.app.ingestion.stocktwits import StockTwitsIngester
 from pulse.app.models.sentiment import IngestResult, SentimentEvent
 from pulse.app.services.aggregator import aggregate_daily
-from pulse.app.services.symbol_cache import SymbolCache
 
 log = logging.getLogger(__name__)
 
@@ -29,19 +28,12 @@ async def run_ingest(
     end_dt = end or now
     start_dt = start or (now - timedelta(hours=hours))
 
-    all_sources = sources or ["news", "sec", "reddit", "stocktwits"]
-    symbol_cache = SymbolCache()
+    all_sources = sources or ["news", "sec", "reddit"]
 
     ingesters = {
         "news": AlpacaNewsIngester(cfg.alpaca_api_key, cfg.alpaca_api_secret, cfg.min_confidence),
-        "sec": SECIngester(cfg.min_confidence),
-        "reddit": RedditIngester(
-            cfg.reddit_client_id,
-            cfg.reddit_client_secret,
-            cfg.reddit_user_agent,
-            symbol_cache,
-            cfg.min_confidence,
-        ),
+        "sec": SECIngester(cfg.min_confidence, cfg.sec_user_agent),
+        "reddit": RedditIngester(cfg.reddit_user_agent, cfg.min_confidence),
         "stocktwits": StockTwitsIngester(cfg.min_confidence),
     }
 
