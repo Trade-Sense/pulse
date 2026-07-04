@@ -9,6 +9,7 @@ dependencies = [
     "apscheduler>=3.11.2",
     "asyncio>=3.4.3",
     "asyncpg>=0.31.0",
+    "curl-cffi>=0.7.0",
     "fastapi[standard]>=0.115.11",
     "llama-index>=0.12.23",
     "llama-index-llms-ollama>=0.5.3",

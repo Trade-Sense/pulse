@@ -40,7 +40,12 @@ class PulseConfig(BaseSettings):
     # Reddit OAuth
     reddit_client_id: str = Field(default="", description="Reddit OAuth client ID")
     reddit_client_secret: str = Field(default="", description="Reddit OAuth client secret")
-    reddit_user_agent: str = Field(default="trade-sense-pulse/1.0", description="Reddit user agent")
+    # Reddit blocks default (curl/python-requests) AND fake-browser (Mozilla/...) UAs,
+    # but allows a simple, honest, unique one. Do NOT make this a browser string.
+    reddit_user_agent: str = Field(
+        default="trade-sense/sentiment-fetch",
+        description="Reddit User-Agent for anonymous .json access (honest, non-browser)",
+    )
 
     # Ingestion
     target_symbols: list[str] = Field(
@@ -48,12 +53,21 @@ class PulseConfig(BaseSettings):
         description="Symbols to ingest sentiment for",
     )
     target_subreddits: list[str] = Field(
-        default=["wallstreetbets", "stocks", "investing", "options", "StockMarket"],
+        default=[
+            "wallstreetbets", "stocks", "investing",
+            "raceto10million", "options", "StockMarket",
+        ],
         description="Subreddits to scrape",
     )
     ingest_lookback_hours: int = Field(default=24, description="Lookback window per ingest run")
     news_ingest_interval_hours: int = Field(default=1, description="How often to auto-ingest Alpaca news")
     reddit_ingest_interval_hours: int = Field(default=4, description="How often to auto-ingest Reddit")
+    sec_ingest_interval_hours: int = Field(default=12, description="How often to auto-ingest SEC filings")
+    stocktwits_ingest_interval_hours: int = Field(default=4, description="How often to auto-ingest StockTwits")
+    sec_user_agent: str = Field(
+        default="TradeSense research admin@tradesense.local",
+        description="User-Agent for SEC EDGAR — required, SEC returns 403 without one",
+    )
     min_confidence: float = Field(default=0.3, description="Discard FinBERT events below this confidence")
 
     # FinBERT
