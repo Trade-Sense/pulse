@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta, timezone
 
+from pulse.app import metrics
 from pulse.app.config import PulseConfig
 from pulse.app.db.repository import SentimentRepository
 from pulse.app.ingestion.news import AlpacaNewsIngester
@@ -54,8 +55,10 @@ async def run_ingest(
             else:
                 events = await ingester.ingest(symbols, start=start_dt, end=end_dt)
             all_events.extend(events)
+            metrics.EVENTS_INGESTED.labels(source=source).inc(len(events))
             log.info("Ingested %d events from %s", len(events), source)
         except Exception as exc:
+            metrics.SOURCE_FETCH_ERRORS.labels(source=source).inc()
             msg = f"{source}: {exc}"
             log.warning("Ingestion failed — %s", msg)
             errors.append(msg)
@@ -64,14 +67,18 @@ async def run_ingest(
 
     # Build daily aggregates
     prev_counts: dict[str, int] = {}
+    prev_day = (end_dt - timedelta(days=1)).date()
     for sym in symbols:
-        prev_counts[sym] = await repo.get_reddit_count_by_date(sym, (end_dt - timedelta(days=1)).date())
+        prev_counts[sym] = await repo.get_reddit_count_by_date(sym, prev_day)
 
     daily_rows = aggregate_daily(all_events, prev_counts)
     for row in daily_rows:
         await repo.upsert_daily(row)
+        metrics.DAILY_UPSERTS.inc()
 
     discarded = len(all_events) - inserted
+    if discarded > 0:
+        metrics.EVENTS_DISCARDED.labels(reason="dedup").inc(discarded)
     return IngestResult(
         ingested=inserted,
         scored=len(all_events),

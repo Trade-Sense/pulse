@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from pulse.app.api.routes import api_router
 from pulse.app.config import get_config
@@ -121,3 +122,6 @@ app.add_middleware(
     allow_headers=app_config.allow_headers,
 )
 app.include_router(api_router)
+
+# RED baseline (http_request_*) + /metrics endpoint.
+Instrumentator().instrument(app).expose(app)
