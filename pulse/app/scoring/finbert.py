@@ -1,14 +1,20 @@
+import os
 from functools import lru_cache
 from typing import Any
 
 from pulse.app.models.sentiment import ScoreResult
 
 _MIN_TEXT_LEN = 15
+# FinBERT scoring is bursty/batch — no need to grab every core. Cap CPU threads.
+_TORCH_THREADS = int(os.getenv("TORCH_NUM_THREADS", "4"))
 
 
 @lru_cache(maxsize=1)
 def _get_pipeline() -> Any:
+    import torch
     from transformers import pipeline  # type: ignore[import]
+
+    torch.set_num_threads(_TORCH_THREADS)
     return pipeline(
         "text-classification",
         model="ProsusAI/finbert",

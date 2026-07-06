@@ -66,3 +66,13 @@ exclude = ["tests/*"]
 [tool.pyright]
 typeCheckingMode = "strict"
 
+# No usable GPU in-container (Mac/OrbStack) — pin torch to the CPU-only wheel index
+# to drop the ~2GB CUDA runtime that would otherwise sit unused in memory.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+

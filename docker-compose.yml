@@ -9,6 +9,10 @@ services:
     environment:
       - DB_URL=postgresql://postgres:admin@forge_timescaledb:5432/forge_dev
       - HF_HUB_DISABLE_XET=1
+      # Cap CPU threads — FinBERT is bursty; don't grab all cores.
+      - TORCH_NUM_THREADS=4
+      - OMP_NUM_THREADS=4
+      - MKL_NUM_THREADS=4
       - ALPACA_API_KEY=AKA5EYKBQQRN8BASRSS5
       - ALPACA_API_SECRET=WQUCOecUGmv7ESsWwnuDcBJQXMtq2HgzU6ZMQgnN
       - REDDIT_CLIENT_ID=
