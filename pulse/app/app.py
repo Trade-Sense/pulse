@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
+from pulse.app import metrics
 from pulse.app.api.routes import api_router
 from pulse.app.config import get_config
 from pulse.app.db.connection import close_pool, get_pool, init_pool
@@ -63,6 +64,18 @@ async def _sec_ingest_job() -> None:
         logger.exception("Scheduled SEC ingest failed")
 
 
+async def _refresh_watermark_job() -> None:
+    """Publish pulse's sentiment-data watermark (latest date per source) as a metric."""
+    try:
+        dates = await SentimentRepository(get_pool()).get_latest_sentiment_dates()
+        for source, d in dates.items():
+            if d is not None:
+                ts = datetime(d.year, d.month, d.day, tzinfo=timezone.utc).timestamp()
+                metrics.LATEST_SENTIMENT_DATE.labels(source=source).set(ts)
+    except Exception:
+        logger.exception("watermark refresh failed")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_pool(app_config.db_url)
@@ -94,6 +107,14 @@ async def lifespan(app: FastAPI):
         trigger="interval",
         hours=app_config.sec_ingest_interval_hours,
         id="sec_ingest",
+        replace_existing=True,
+        next_run_time=now,
+    )
+    scheduler.add_job(
+        _refresh_watermark_job,
+        trigger="interval",
+        hours=1,
+        id="watermark_refresh",
         replace_existing=True,
         next_run_time=now,
     )

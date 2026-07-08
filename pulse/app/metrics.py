@@ -49,3 +49,9 @@ DAILY_UPSERTS = Counter(
     "pulse_daily_upserts_total",
     "daily_sentiment rows upserted.",
 )
+
+LATEST_SENTIMENT_DATE = Gauge(
+    "pulse_latest_sentiment_date",
+    "Latest date pulse holds sentiment for, by source (unix seconds) — pulse's watermark.",
+    ["source"],
+)

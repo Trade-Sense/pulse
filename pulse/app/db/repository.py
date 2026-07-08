@@ -128,3 +128,18 @@ class SentimentRepository:
                 symbol, d,
             )
             return int(val) if val else 0
+
+    async def get_latest_sentiment_dates(self) -> dict[str, date | None]:
+        """Latest date pulse holds sentiment for, per source and overall — pulse's watermark."""
+        async with self._pool.acquire() as conn:
+            row = await conn.fetchrow(
+                """
+                SELECT
+                    MAX(date) FILTER (WHERE news_score   IS NOT NULL) AS news,
+                    MAX(date) FILTER (WHERE sec_score    IS NOT NULL) AS sec,
+                    MAX(date) FILTER (WHERE reddit_score IS NOT NULL) AS reddit,
+                    MAX(date)                                          AS any
+                FROM daily_sentiment
+                """
+            )
+            return {"news": row["news"], "sec": row["sec"], "reddit": row["reddit"], "any": row["any"]}
