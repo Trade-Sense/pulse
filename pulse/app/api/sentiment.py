@@ -12,6 +12,15 @@ from pulse.app.models.sentiment import DailySentiment, SentimentEvent
 router = APIRouter()
 
 
+@router.get("/watermark")
+async def get_watermark(pool: Any = Depends(db_pool)) -> dict[str, str | None]:
+    """Latest sentiment date pulse holds, per source and overall (ISO dates) — lets a
+    backfill resume from where it left off instead of re-fetching a full range."""
+    repo = SentimentRepository(pool)
+    dates = await repo.get_latest_sentiment_dates()
+    return {k: (v.isoformat() if v else None) for k, v in dates.items()}
+
+
 @router.get("/{symbol}/daily", response_model=list[DailySentiment])
 async def get_daily(
     symbol: str,

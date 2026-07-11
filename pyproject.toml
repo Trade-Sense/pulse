@@ -11,6 +11,7 @@ dependencies = [
     "asyncpg>=0.31.0",
     "curl-cffi>=0.7.0",
     "fastapi[standard]>=0.115.11",
+    "prometheus-fastapi-instrumentator>=7.0.0",
     "llama-index>=0.12.23",
     "llama-index-llms-ollama>=0.5.3",
     "pydantic-settings>=2.8.1",
@@ -65,4 +66,14 @@ exclude = ["tests/*"]
 
 [tool.pyright]
 typeCheckingMode = "strict"
+
+# No usable GPU in-container (Mac/OrbStack) — pin torch to the CPU-only wheel index
+# to drop the ~2GB CUDA runtime that would otherwise sit unused in memory.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
